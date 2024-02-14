@@ -21,6 +21,13 @@ public class GuestsServlet extends HttpServlet {
 
     @Override
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+
+        String id =  req.getParameter("id");
+        if (req.getPathInfo() != null){
+            System.out.println(req.getPathInfo());
+
+        }
+
         resp.setContentType("application/json");
         resp.setCharacterEncoding("utf-8");
         resp.setStatus(200);
@@ -35,7 +42,7 @@ public class GuestsServlet extends HttpServlet {
                 .addModule(new JavaTimeModule())
                 .build();
         PrintWriter out = resp.getWriter();
-        out.write(objectMapper.writeValueAsString(guests));
+        out.write(objectMapper.writeValueAsString(guests)+ "\n"+req.getRequestURI());
         out.flush();
     }
 }
