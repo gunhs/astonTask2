@@ -6,9 +6,11 @@ import ru.sharanov.utils.DBConfig;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class GuestRepositoryImpl implements GuestRepository {
 
@@ -28,7 +30,7 @@ public class GuestRepositoryImpl implements GuestRepository {
                 guests.add(new Guest(rs.getInt(1),
                         rs.getString(2),
                         rs.getString(3),
-                        rs.getLong(4),
+                        rs.getString(4),
                         beginDate,
                         endDate));
             }
@@ -39,8 +41,10 @@ public class GuestRepositoryImpl implements GuestRepository {
     }
 
     @Override
-    public void saveGuest(Guest guest) {
-
+    public void saveGuest(Guest guest) throws SQLException {
+        String query = "INSERT INTO guests (VALUES )";
+        PreparedStatement ps = connection.prepareStatement(query);
+        ResultSet rs = ps.executeQuery();
     }
 
     @Override
@@ -49,7 +53,28 @@ public class GuestRepositoryImpl implements GuestRepository {
     }
 
     @Override
-    public void deleteGuestById(int i) {
+    public void deleteGuestById(int i) throws SQLException {
+        String query = "DELETE * FROM guests where id = i";
+        PreparedStatement ps = connection.prepareStatement(query);
+        ResultSet rs = ps.executeQuery();
+    }
 
+    @Override
+    public Optional<Guest> getGuestById(int i) throws SQLException {
+        String query = "SELECT * FROM guests where id = i";
+        PreparedStatement ps = connection.prepareStatement(query);
+        ResultSet rs = ps.executeQuery();
+        if (rs == null) {
+            return Optional.empty();
+        }
+        LocalDate beginDate = rs.getDate(5).toLocalDate();
+        LocalDate endDate = rs.getDate(6).toLocalDate();
+        Guest guest = new Guest(rs.getInt(1),
+                rs.getString(2),
+                rs.getString(3),
+                rs.getString(4),
+                beginDate,
+                endDate);
+        return Optional.of(guest);
     }
 }
