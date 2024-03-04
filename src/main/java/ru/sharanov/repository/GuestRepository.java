@@ -4,17 +4,17 @@ import ru.sharanov.models.Guest;
 
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Optional;
 
 public interface GuestRepository {
-
-    List<Guest> getAllGuests();
+    List<Guest> getAllGuests() throws SQLException;
 
     void saveGuest(Guest guest) throws SQLException;
 
-    void updateGuest(Guest guest);
+    void updateGuest(Guest guest, int id);
 
     void deleteGuestById(int i) throws SQLException;
 
-    Optional<Guest> getGuestById(int i) throws SQLException;
+    Guest getGuestById(int i) throws SQLException;
+
+    List<Guest> getAllGuestsByRoomId(int id) throws SQLException;
 }

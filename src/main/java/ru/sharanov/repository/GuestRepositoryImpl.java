@@ -7,74 +7,97 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class GuestRepositoryImpl implements GuestRepository {
-
-    private Connection connection;
 
     @Override
     public List<Guest> getAllGuests() {
         String query = "SELECT * FROM guests ORDER BY id";
+        return getListGuests(query);
+    }
+
+    @Override
+    public void saveGuest(Guest guest) {
+        String query = "INSERT INTO guests (name, surname, passportNumber, roomId, firstDateOfStay, lastDateOfStay) " +
+                "VALUES ((?), (?), (?), (?), (?), (?))";
+        prepareStAndSendQuery(query, guest);
+    }
+
+    @Override
+    public void updateGuest(Guest guest, int id) {
+        String query = "UPDATE guests SET name = ?, surname = ?," +
+                "passportNumber = ?, roomId = ?, firstDateOfStay = ?, lastDateOfStay = ? where id = ?;";
+        prepareStAndSendQuery(query, guest);
+    }
+
+    private void prepareStAndSendQuery(String query, Guest guest) {
+        try (Connection connection = DBConfig.connection()) {
+            PreparedStatement ps = connection.prepareStatement(query);
+            ps.setString(1, guest.getName());
+            ps.setString(2, guest.getSurname());
+            ps.setString(3, guest.getPassportNumber());
+            ps.setDate(4, java.sql.Date.valueOf(guest.getFirstDateOfStay()));
+            ps.setDate(5, java.sql.Date.valueOf(guest.getLastDateOfStay()));
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void deleteGuestById(int id) throws SQLException {
+        String query = "DELETE FROM guests where id = ?";
+        try (Connection connection = DBConfig.connection()) {
+            PreparedStatement ps = connection.prepareStatement(query);
+            ps.setInt(1, id);
+            ps.executeUpdate();
+        }
+    }
+
+    @Override
+    public Guest getGuestById(int id) throws SQLException {
+        String query = "SELECT * FROM guests where id = ?";
+        try (Connection connection = DBConfig.connection()) {
+            PreparedStatement ps = connection.prepareStatement(query);
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+            if (!rs.next()) {
+                throw new SQLException();
+            }
+            return getGuestFromResulSet(rs);
+        }
+    }
+
+    @Override
+    public List<Guest> getAllGuestsByRoomId(int id) {
+        String query = "SELECT * FROM guests WHERE id = ? ORDER BY id";
+        return getListGuests(query);
+    }
+
+    private List<Guest> getListGuests(String query){
         List<Guest> guests = new ArrayList<>();
-        try {
-            connection = DBConfig.connection();
+        try (Connection connection = DBConfig.connection()) {
             PreparedStatement ps = connection.prepareStatement(query);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                LocalDate beginDate = rs.getDate(5).toLocalDate();
-                LocalDate endDate = rs.getDate(6).toLocalDate();
-                guests.add(new Guest(rs.getInt(1),
-                        rs.getString(2),
-                        rs.getString(3),
-                        rs.getString(4),
-                        beginDate,
-                        endDate));
+                guests.add(getGuestFromResulSet(rs));
             }
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
+            rs.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
         return guests;
     }
 
-    @Override
-    public void saveGuest(Guest guest) throws SQLException {
-        String query = "INSERT INTO guests (VALUES )";
-        PreparedStatement ps = connection.prepareStatement(query);
-        ResultSet rs = ps.executeQuery();
-    }
-
-    @Override
-    public void updateGuest(Guest guest) {
-
-    }
-
-    @Override
-    public void deleteGuestById(int i) throws SQLException {
-        String query = "DELETE * FROM guests where id = i";
-        PreparedStatement ps = connection.prepareStatement(query);
-        ResultSet rs = ps.executeQuery();
-    }
-
-    @Override
-    public Optional<Guest> getGuestById(int i) throws SQLException {
-        String query = "SELECT * FROM guests where id = i";
-        PreparedStatement ps = connection.prepareStatement(query);
-        ResultSet rs = ps.executeQuery();
-        if (rs == null) {
-            return Optional.empty();
-        }
-        LocalDate beginDate = rs.getDate(5).toLocalDate();
-        LocalDate endDate = rs.getDate(6).toLocalDate();
-        Guest guest = new Guest(rs.getInt(1),
+    private Guest getGuestFromResulSet(ResultSet rs) throws SQLException {
+        return new Guest(rs.getInt(1),
                 rs.getString(2),
                 rs.getString(3),
                 rs.getString(4),
-                beginDate,
-                endDate);
-        return Optional.of(guest);
+                rs.getInt(5),
+                rs.getDate(6).toLocalDate(),
+                rs.getDate(7).toLocalDate());
     }
 }

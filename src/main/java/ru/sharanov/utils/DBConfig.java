@@ -6,9 +6,9 @@ import java.sql.SQLException;
 
 public class DBConfig {
     private static String dbDriver = "org.postgresql.Driver";
-    private static String url = "jdbc:postgresql://localhost:5432/hotel";
+    private static String url = "jdbc:postgresql://localhost:5433/hotel";
     private static String user = "gunhs";
-    private static String password = "kopo6ok";
+    private static String password = "12345";
 
     public static Connection connection() {
         Connection connection;
