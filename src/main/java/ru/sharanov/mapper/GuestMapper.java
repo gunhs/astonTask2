@@ -13,6 +13,7 @@ public class GuestMapper {
                 .id(guest.getId())
                 .name((guest.getName()))
                 .surname(guest.getSurname())
+                .passportNumber(guest.getPassportNumber())
                 .roomId(guest.getRoomId())
                 .firstDateOfStay(guest.getFirstDateOfStay())
                 .lastDateOfStay(guest.getLastDateOfStay())
