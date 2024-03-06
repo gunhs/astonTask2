@@ -48,13 +48,6 @@ public class RoomRepositoryImpl implements RoomRepository {
     }
 
     @Override
-    public void updateRoom(Room room) {
-        String query = "UPDATE rooms SET name = ?, surname = ?," +
-                "passportNumber = ?, roomId = ?, firstDateOfStay = ?, lastDateOfStay = ? where id = ?;";
-//        prepareStAndSendQuery(query, guest);
-    }
-
-    @Override
     public Optional<Room> getRoomByNumber(int number) {
         String query = "SELECT * FROM rooms where id = ?";
         try (Connection connection = DBConfig.connection()) {

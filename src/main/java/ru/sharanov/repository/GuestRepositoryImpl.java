@@ -22,29 +22,36 @@ public class GuestRepositoryImpl implements GuestRepository {
     public void saveGuest(Guest guest) {
         String query = "INSERT INTO guests (name, surname, passportNumber, roomId, firstDateOfStay, lastDateOfStay) " +
                 "VALUES ((?), (?), (?), (?), (?), (?))";
-        prepareStAndSendQuery(query, guest);
+        try (Connection connection = DBConfig.connection()) {
+            PreparedStatement ps = connection.prepareStatement(query);
+            readyPs(ps, guest).executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
-    public void updateGuest(Guest guest, int id) {
+    public void updateGuest(Guest guest) {
         String query = "UPDATE guests SET name = ?, surname = ?," +
                 "passportNumber = ?, roomId = ?, firstDateOfStay = ?, lastDateOfStay = ? where id = ?;";
-        prepareStAndSendQuery(query, guest);
-    }
-
-    private void prepareStAndSendQuery(String query, Guest guest) {
         try (Connection connection = DBConfig.connection()) {
             PreparedStatement ps = connection.prepareStatement(query);
-            ps.setString(1, guest.getName());
-            ps.setString(2, guest.getSurname());
-            ps.setString(3, guest.getPassportNumber());
-            ps.setInt(4, guest.getRoomId());
-            ps.setDate(5, java.sql.Date.valueOf(guest.getFirstDateOfStay()));
-            ps.setDate(6, java.sql.Date.valueOf(guest.getLastDateOfStay()));
+            readyPs(ps, guest);
+            ps.setInt(7, guest.getId());
             ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    private PreparedStatement readyPs(PreparedStatement ps, Guest guest) throws SQLException {
+        ps.setString(1, guest.getName());
+        ps.setString(2, guest.getSurname());
+        ps.setString(3, guest.getPassportNumber());
+        ps.setInt(4, guest.getRoomId());
+        ps.setDate(5, java.sql.Date.valueOf(guest.getFirstDateOfStay()));
+        ps.setDate(6, java.sql.Date.valueOf(guest.getLastDateOfStay()));
+        return ps;
     }
 
     @Override
@@ -77,7 +84,7 @@ public class GuestRepositoryImpl implements GuestRepository {
         return getListGuests(query);
     }
 
-    private List<Guest> getListGuests(String query){
+    private List<Guest> getListGuests(String query) {
         List<Guest> guests = new ArrayList<>();
         try (Connection connection = DBConfig.connection()) {
             PreparedStatement ps = connection.prepareStatement(query);

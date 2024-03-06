@@ -10,7 +10,7 @@ public interface GuestRepository {
 
     void saveGuest(Guest guest) throws SQLException;
 
-    void updateGuest(Guest guest, int id);
+    void updateGuest(Guest guest);
 
     void deleteGuestById(int i) throws SQLException;
 

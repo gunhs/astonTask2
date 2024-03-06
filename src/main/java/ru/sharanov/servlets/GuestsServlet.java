@@ -78,14 +78,16 @@ public class GuestsServlet extends HttpServlet {
 
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        if (req.getPathInfo() == null || !req.getPathInfo().matches("\\d+")) {
+        String id = getIdFromPath(req);
+        if (id.isEmpty()) {
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST, BAD_ADDRESS);
             return;
         }
         String requestBody = req.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
         GuestDto guestDto = objectMapper.readValue(requestBody, GuestDto.class);
+        guestDto.setId(Integer.parseInt(id));
         try {
-            guestService.updateGuest(guestDto, Integer.parseInt(req.getPathInfo()));
+            guestService.updateGuest(guestDto);
         } catch (SQLException e) {
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST, USER_NOT_FOUND);
             log.error(e.getMessage());
@@ -93,17 +95,31 @@ public class GuestsServlet extends HttpServlet {
         resp.setStatus(201);
     }
 
+
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        if (req.getPathInfo() == null || !req.getPathInfo().matches("\\d+")) {
+        String id = getIdFromPath(req);
+        if (id.isEmpty()) {
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST, BAD_ADDRESS);
             return;
         }
         try {
-            guestService.deleteGuestDtoById(Integer.parseInt(req.getPathInfo()));
+            guestService.deleteGuestDtoById(Integer.parseInt(id));
         } catch (SQLException e) {
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST, USER_NOT_FOUND);
             log.error(e.getMessage());
         }
+    }
+
+    private String getIdFromPath(HttpServletRequest req) {
+        String id = "";
+        if (req.getPathInfo() == null) {
+            return id;
+        }
+        id = req.getPathInfo().replaceAll("\\D", "");
+        if (!id.matches("\\d+")) {
+            return "";
+        }
+        return id;
     }
 }

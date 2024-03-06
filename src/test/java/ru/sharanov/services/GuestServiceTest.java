@@ -71,8 +71,8 @@ public class GuestServiceTest {
     @Test
     @DisplayName("Метод обновления guest")
     public void updateGuestTest() throws SQLException{
-        guestService.updateGuest(guestDto1, 1);
-        verify(guestRepository).updateGuest(guest1, 1);
+        guestService.updateGuest(guestDto1);
+        verify(guestRepository).updateGuest(guest1);
     }
 
     @Test
