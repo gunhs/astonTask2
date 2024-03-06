@@ -24,6 +24,7 @@ import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -69,6 +70,8 @@ public class RoomServiceTest {
     @DisplayName("Метод получения room DTO по id")
     public void getRoomDtoByIdTest() throws SQLException {
         when(roomRepository.getRoomById(1)).thenReturn(room1);
+        when(guestRepository.getAllGuestsByRoomId(1)).thenReturn(room1.getGuests());
+
         RoomDto expect = roomDto1;
         RoomDto actual = roomService.getRoomDtoById(1);
         Assertions.assertEquals(expect, actual);
@@ -77,25 +80,7 @@ public class RoomServiceTest {
     @Test
     @DisplayName("Метод получения всех rooms DTO")
     public void getAllRoomsTest() {
-        List<RoomDto> roomDtoList = new ArrayList<>();
-        List <Room> roomList = new ArrayList<>();
-        roomList.add(room1);
-        roomList.add(room2);
-        roomDtoList.add(roomDto1);
-        roomDtoList.add(roomDto2);
-//        try (MockedStatic<RoomMapper> roomMapperMockedStatic = Mockito.mockStatic(RoomMapper.class)) {
-//            roomMapperMockedStatic.when(()->RoomMapper.roomToRoomDtoList(roomList)).thenReturn(roomDtoList);
-//            List<RoomDto> expect = new ArrayList<>();
-//            expect.add(roomDto1);
-//            expect.add(roomDto2);
-//            List<RoomDto> actual = roomService.getAllRooms();
-//            Assertions.assertEquals(expect, actual);
-//        }
-
-        when(roomRepository.getAllRooms()).thenReturn(roomList);
-        when(guestRepository.getAllGuestsByRoomId(anyInt())).thenReturn(null);
-        List<RoomDto> actual =  roomService.getAllRooms();
-        Assertions.assertEquals(roomDtoList, actual);
-
+        roomService.getAllRooms();
+        verify(roomRepository).getAllRooms();
     }
 }

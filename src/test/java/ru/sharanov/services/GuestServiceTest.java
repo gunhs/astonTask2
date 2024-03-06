@@ -70,15 +70,16 @@ public class GuestServiceTest {
 
     @Test
     @DisplayName("Метод обновления guest")
-    public void updateGuestTest() {
-        guestRepository.updateGuest(guest1, 1);
+    public void updateGuestTest() throws SQLException{
+        guestService.updateGuest(guestDto1, 1);
         verify(guestRepository).updateGuest(guest1, 1);
     }
 
     @Test
     @DisplayName("Метод сохранения guest")
     public void saveGuestTest() {
-        guestRepository.saveGuest(guest1);
+        guestService.saveGuest(guestDto1);
+
         verify(guestRepository).saveGuest(guest1);
     }
 

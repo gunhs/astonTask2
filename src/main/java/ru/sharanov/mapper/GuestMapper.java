@@ -22,9 +22,11 @@ public class GuestMapper {
 
     public static Guest guestDtoToGuest(GuestDto guestDto) {
         return Guest.builder()
+                .id(guestDto.getId())
                 .name(guestDto.getName())
                 .surname(guestDto.getSurname())
                 .roomId(guestDto.getRoomId())
+                .passportNumber(guestDto.getPassportNumber())
                 .firstDateOfStay(guestDto.getFirstDateOfStay())
                 .lastDateOfStay(guestDto.getLastDateOfStay())
                 .build();
