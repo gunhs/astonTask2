@@ -38,8 +38,9 @@ public class GuestRepositoryImpl implements GuestRepository {
             ps.setString(1, guest.getName());
             ps.setString(2, guest.getSurname());
             ps.setString(3, guest.getPassportNumber());
-            ps.setDate(4, java.sql.Date.valueOf(guest.getFirstDateOfStay()));
-            ps.setDate(5, java.sql.Date.valueOf(guest.getLastDateOfStay()));
+            ps.setInt(4, guest.getRoomId());
+            ps.setDate(5, java.sql.Date.valueOf(guest.getFirstDateOfStay()));
+            ps.setDate(6, java.sql.Date.valueOf(guest.getLastDateOfStay()));
             ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();

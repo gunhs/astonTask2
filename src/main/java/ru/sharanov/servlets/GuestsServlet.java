@@ -38,7 +38,7 @@ public class GuestsServlet extends HttpServlet {
         PrintWriter out = resp.getWriter();
         resp.setContentType("application/json");
         resp.setCharacterEncoding("utf-8");
-        if (req.getPathInfo() == null) {
+        if (req.getPathInfo() == null || req.getPathInfo().trim().equals("/")) {
             List<GuestDto> guests = guestService.getAllGuests();
             resp.setStatus(200);
             out.write(objectMapper.writeValueAsString(guests));

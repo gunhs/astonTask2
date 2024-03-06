@@ -20,10 +20,10 @@ CREATE TABLE guests
     name            varchar(500) DEFAULT NULL,
     surname         varchar(500) DEFAULT NULL,
     passportnumber  varchar(500) DEFAULT NULL,
-    roomsid         integer      DEFAULT NULL,
+    roomid         integer      DEFAULT NULL,
     firstdateofstay date         DEFAULT NULL,
     lastdateofstay  date         DEFAULT NULL,
-    FOREIGN KEY (roomsid) REFERENCES rooms (Id)
+    FOREIGN KEY (roomid) REFERENCES rooms (Id)
 );
 
 

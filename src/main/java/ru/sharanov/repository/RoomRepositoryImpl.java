@@ -10,6 +10,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class RoomRepositoryImpl implements RoomRepository {
     @Override
@@ -44,6 +45,30 @@ public class RoomRepositoryImpl implements RoomRepository {
             e.printStackTrace();
         }
         return rooms;
+    }
+
+    @Override
+    public void updateRoom(Room room) {
+        String query = "UPDATE rooms SET name = ?, surname = ?," +
+                "passportNumber = ?, roomId = ?, firstDateOfStay = ?, lastDateOfStay = ? where id = ?;";
+//        prepareStAndSendQuery(query, guest);
+    }
+
+    @Override
+    public Optional<Room> getRoomByNumber(int number) {
+        String query = "SELECT * FROM rooms where id = ?";
+        try (Connection connection = DBConfig.connection()) {
+            PreparedStatement ps = connection.prepareStatement(query);
+            ps.setInt(1, number);
+            ResultSet rs = ps.executeQuery();
+            if (!rs.next()) {
+                return Optional.empty();
+            }
+            return Optional.of(getRoomFromRs(rs));
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+        }
+        return Optional.empty();
     }
 
     private Room getRoomFromRs(ResultSet rs) throws SQLException {
